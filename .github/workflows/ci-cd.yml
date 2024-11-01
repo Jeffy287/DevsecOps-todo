@@ -10,31 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'  # Change this to your desired Node.js version
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-      - name: Run tests
-        run: npm test || echo "No test script found"  # Gracefully handle missing test script
+    - name: Run tests
+      run: npm test
 
-      - name: Build the app
-        run: npm run build  # Ensure you have a build script in your package.json
+    - name: Build the app
+      run: npm run build
 
-      - name: Deploy to Netlify
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: npx netlify-cli deploy --prod --dir=./TodoApp --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
-
-      - name: Debug Secrets
-        run: echo "Netlify Site ID: $NETLIFY_SITE_ID, Auth Token Length: ${#NETLIFY_AUTH_TOKEN}"
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    - name: Deploy to Netlify
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      run: npx netlify-cli deploy --prod --dir=./TodoApp --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
