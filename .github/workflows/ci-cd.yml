@@ -34,10 +34,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Pull OWASP ZAP Docker image
+        run: docker pull owasp/zap2docker-stable
+
       - name: Run OWASP ZAP in Docker
         run: |
           docker run -d -p 8080:8080 --name owasp-zap owasp/zap2docker-stable zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true
-          
+
       - name: Wait for OWASP ZAP to initialize
         run: sleep 30  # Wait time for ZAP to start up
 
