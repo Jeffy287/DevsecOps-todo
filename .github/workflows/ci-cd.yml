@@ -16,8 +16,12 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: TodoApp
         run: npm install
+        working-directory: TodoApp  # Set the correct path to TodoApp
+
+      - name: Build application
+        run: npm run build
+        working-directory: TodoApp
 
   zap_scan:
     needs: build
@@ -47,8 +51,8 @@ jobs:
         run: npm install -g netlify-cli
 
       - name: Deploy to Netlify
-        working-directory: TodoApp
         run: |
           NETLIFY_AUTH_TOKEN=${{ secrets.NETLIFY_AUTH_TOKEN }} \
           NETLIFY_SITE_ID=${{ secrets.NETLIFY_SITE_ID }} \
           npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod --dir=.
+        working-directory: TodoApp  # Use the correct working directory for deployment
