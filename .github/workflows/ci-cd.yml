@@ -34,14 +34,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Start OWASP ZAP in the background
+      - name: Run OWASP ZAP in Docker
         run: |
           docker run -d -p 8080:8080 --name owasp-zap owasp/zap2docker-stable zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true
-
-      - name: Wait for OWASP ZAP to start
-        run: |
-          echo "Waiting for OWASP ZAP to start..."
-          sleep 30  # Wait for 30 seconds for ZAP to start
+          
+      - name: Wait for OWASP ZAP to initialize
+        run: sleep 30  # Wait time for ZAP to start up
 
       - name: OWASP ZAP Scan
         uses: zaproxy/action-full-scan@v0.9.0
@@ -50,7 +48,7 @@ jobs:
         continue-on-error: true
 
       - name: Check for vulnerabilities
-        if: ${{ steps.zap.outputs.fail }} # OWASP ZAP scan has flagged vulnerabilities
+        if: ${{ steps.zap.outputs.fail }}  # OWASP ZAP scan has flagged vulnerabilities
         run: |
           echo "Vulnerabilities detected! Failing the job."
           exit 1
@@ -58,7 +56,7 @@ jobs:
   deploy:
     needs: owasp_zap
     runs-on: ubuntu-latest
-    if: success() # Only run if OWASP ZAP did not flag issues
+    if: success()  # Only run if OWASP ZAP did not flag issues
     steps:
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
