@@ -18,12 +18,11 @@ jobs:
       with:
         node-version: '16'  # Ensure compatibility with Intl.Segmenter
 
-    - name: Clear npm cache
-      run: npm cache clean --force
-
     - name: Install dependencies
+      working-directory: TodoApp  # Specify the working directory
       run: npm install
 
     - name: Build and Deploy
+      working-directory: TodoApp  # Specify the working directory
       run: |
         npx netlify-cli deploy --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --prod
