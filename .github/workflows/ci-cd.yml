@@ -11,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Updated to v3
+      uses: actions/checkout@v3  # Using the latest version
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3  # Update to a more recent version if available
+      uses: actions/setup-node@v3  # Using the latest version
       with:
-        node-version: '18'  # Make sure this is still compatible
+        node-version: '20'  # Explicitly specify Node.js v20
 
     - name: Install dependencies
       working-directory: TodoApp
