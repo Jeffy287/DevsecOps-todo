@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap/**  # Adjust path if necessary
+          path: zap/**  # Adjust path to point to the correct location of ZAP reports
 
       - name: Check for vulnerabilities
         if: ${{ steps.zap.outputs.fail }} # OWASP ZAP scan has flagged vulnerabilities
