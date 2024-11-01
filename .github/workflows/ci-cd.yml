@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Using the latest version
+      uses: actions/checkout@v3  # This is already updated to v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3  # Using the latest version
+      uses: actions/setup-node@v3
       with:
         node-version: '20'  # Explicitly specify Node.js v20
 
