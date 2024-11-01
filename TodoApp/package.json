@@ -14,7 +14,7 @@
     "http-server": "^0.12.3"
   },
   "devDependencies": {
-    "jest": "^29.0.0" // Add Jest for testing; update version as necessary
+    "jest": "^29.0.0" // Use Jest for testing
   },
   "keywords": [
     "todo",
