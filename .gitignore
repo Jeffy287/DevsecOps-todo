@@ -1,38 +1,32 @@
-# Node.js dependencies
+# Node modules
 node_modules/
 
-# Build outputs
+# Build output
 dist/
 build/
-
-# Netlify config
-netlify.toml
 
 # Logs
 logs
 *.log
+npm-debug.log*
 
 # Environment variables
 .env
 
-# macOS
-.DS_Store
+# Netlify configuration
+.netlify/
+netlify.toml
 
-# Windows
-Thumbs.db
-ehthumbs.db
-
-# VS Code
+# IDE and editor configurations
 .vscode/
-
-# Ignore any other generated files or directories
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# Ignore temporary files
-*.tmp
-*.temp
+# Operating system files
+.DS_Store
+Thumbs.db
 
-# Ignore IDE project files
-*.iml
+# Other files to ignore
+coverage/
+*.tgz

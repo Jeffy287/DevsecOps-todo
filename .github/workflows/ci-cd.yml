@@ -54,20 +54,27 @@ jobs:
           target: 'https://jefdevsecops.netlify.app/'  # Update this with your Netlify app URL
           fail_action: false  # Allows non-critical warnings to pass
           rules_file_name: '.zap/rules.js'  # Customize ZAP rules if needed
+          output: 'zap/zap_report.html'  # Specify where to save the report
         continue-on-error: true  # Continue if there are warnings or non-critical errors
       
+      - name: Create zap directory
+        run: mkdir -p zap
+
       - name: Upload ZAP scan report
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap/**  # Adjust path if necessary
+          path: zap/zap_report.html  # Adjust this path to match the output location
 
       - name: Check for vulnerabilities
-        if: ${{ steps.zap.outputs.fail }}
         run: |
-          echo "Vulnerabilities detected! Failing the job."
-          exit 1
+          if grep -q "FAIL" zap/zap_report.html; then
+            echo "Vulnerabilities detected! Failing the job."
+            exit 1
+          else
+            echo "No critical vulnerabilities found."
+          fi
 
   deploy:
     needs: zap_scan
