@@ -34,6 +34,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Pull OWASP ZAP Docker image
         run: docker pull owasp/zap2docker-stable
 
@@ -47,7 +50,7 @@ jobs:
       - name: OWASP ZAP Scan
         uses: zaproxy/action-full-scan@v0.9.0
         with:
-          target: 'https://jefdevsecops.netlify.app/'  # Update to your actual app URL if different
+          target: 'http://localhost:8080'  # Update to your actual app URL if different
         continue-on-error: true
 
       - name: Check for vulnerabilities
