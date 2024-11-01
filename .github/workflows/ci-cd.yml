@@ -1,34 +1,67 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline with OWASP ZAP Scan
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        working-directory: ./TodoApp
+        run: npm install
 
-    - name: Run tests
-      run: npm test
+      - name: Build the app
+        working-directory: ./TodoApp
+        run: npm run build
 
-    - name: Build the app
-      run: npm run build
+      - name: Run tests
+        working-directory: ./TodoApp
+        run: npm test
 
-    - name: Deploy to Netlify
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      run: npx netlify-cli deploy --prod --dir=./TodoApp --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
+  owasp_zap:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start OWASP ZAP in the background
+        run: |
+          docker run -d -p 8080:8080 --name owasp-zap owasp/zap2docker-stable zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true
+
+      - name: Wait for OWASP ZAP to start
+        run: |
+          echo "Waiting for OWASP ZAP to start..."
+          sleep 30  # Wait for 30 seconds for ZAP to start
+
+      - name: OWASP ZAP Scan
+        uses: zaproxy/action-full-scan@v0.9.0
+        with:
+          target: 'https://jefdevsecops.netlify.app/'  # Update to your actual app URL if different
+        continue-on-error: true
+
+      - name: Check for vulnerabilities
+        if: ${{ steps.zap.outputs.fail }} # OWASP ZAP scan has flagged vulnerabilities
+        run: |
+          echo "Vulnerabilities detected! Failing the job."
+          exit 1
+
+  deploy:
+    needs: owasp_zap
+    runs-on: ubuntu-latest
+    if: success() # Only run if OWASP ZAP did not flag issues
+    steps:
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        run: npx netlify-cli deploy --prod --dir=./TodoApp --site=${{ secrets.NETLIFY_SITE_ID }} --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}

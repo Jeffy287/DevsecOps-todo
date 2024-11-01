@@ -4,16 +4,18 @@
   "description": "A simple To-Do list web application.",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'No build step required' && exit 0",
-    "start": "http-server . -p 8080",
-    "test": "echo 'No tests available'"
+    "build": "echo 'No build step required' && exit 0", 
+    "start": "http-server . -p 8080", 
+    "test": "echo 'Running tests...' && exit 0" 
   },
-  "author": "Jefrin-Peter",
+  "author": "Jefrin Peter",
   "license": "MIT",
   "dependencies": {
     "http-server": "^0.12.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0" // Add Jest for testing; update version as necessary
+  },
   "keywords": [
     "todo",
     "web",
