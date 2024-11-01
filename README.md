@@ -13,7 +13,7 @@ This is a simple To-Do app that allows users to add, remove, and manage tasks. T
 - CSS
 - JavaScript
 
-## Installation
+### Installation
 
 1. Clone the repository:
    ```bash
