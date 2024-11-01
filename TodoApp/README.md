@@ -16,7 +16,7 @@ The To-Do App is a simple web application that allows users to manage their task
 - CSS
 - JavaScript
 
-## Getting Started
+## Getting Started#
 
 To run this application locally, follow these steps:
 
