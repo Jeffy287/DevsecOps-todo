@@ -11,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Updated to v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3  # Update to a more recent version if available
       with:
-        node-version: '18'  # Updated to a version compatible with netlify-cli
+        node-version: '18'  # Make sure this is still compatible
 
     - name: Install dependencies
       working-directory: TodoApp
