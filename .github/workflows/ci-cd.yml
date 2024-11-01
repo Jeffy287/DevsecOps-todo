@@ -79,13 +79,15 @@ jobs:
   deploy:
     needs: zap_scan
     runs-on: ubuntu-latest
-    if: success() # Only run if OWASP ZAP did not flag critical issues
+    if: success()  # Only run if OWASP ZAP did not flag critical issues
     steps:
+      - name: Check environment variables
+        run: |
+          echo "NETLIFY_SITE_ID: $NETLIFY_SITE_ID"
+          echo "NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN"
+
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
       
       - name: Deploy to Netlify
-        run: npx netlify-cli deploy --prod --dir=./TodoApp --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: npx netlify-cli deploy --prod --dir=./TodoApp --site=${{ secrets.NETLIFY_SITE_ID }} --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
