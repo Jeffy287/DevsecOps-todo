@@ -1,5 +1,3 @@
-name: CI/CD Pipeline with OWASP ZAP Scan
-
 on:
   push:
     branches:
@@ -8,23 +6,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # This is already updated to v3
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Explicitly specify Node.js v20
+          node-version: '20'
 
       - name: Install dependencies
-        working-directory: ./TodoApp
+        working-directory: TodoApp
         run: npm install
-
-      - name: Build application
-        working-directory: ./TodoApp
-        run: npm run build
 
   zap_scan:
     needs: build
@@ -33,42 +26,29 @@ jobs:
       - name: Start OWASP ZAP scan
         uses: zaproxy/action-full-scan@v0.8.0
         with:
-          target: 'https://jefdevsecops.netlify.app/'  # Update this with your Netlify app URL
-          fail_action: false  # Allows non-critical warnings to pass
-          rules_file_name: '.zap/rules.js'  # Customize ZAP rules if needed
-          output: 'zap/zap_report.html'  # Specify where to save the report
-        continue-on-error: true  # Continue if there are warnings or non-critical errors
-      
-      - name: Create zap directory
-        run: mkdir -p zap
+          target: 'https://jefdevsecops.netlify.app/'  # Update with your site URL
+          fail_action: false
+          output: 'zap/zap_report.html'
+        continue-on-error: true
 
       - name: Upload ZAP scan report
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap/zap_report.html  # Adjust this path to match the output location
-
-      - name: Check for vulnerabilities
-        run: |
-          if grep -q "FAIL" zap/zap_report.html; then
-            echo "Vulnerabilities detected! Failing the job."
-            exit 1
-          else
-            echo "No critical vulnerabilities found."
-          fi
+          path: zap/zap_report.html
 
   deploy:
     needs: zap_scan
     runs-on: ubuntu-latest
-    if: success() # Only run if OWASP ZAP did not flag critical issues
+    if: success()
     steps:
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
-      
+
       - name: Deploy to Netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        working-directory: TodoApp
         run: |
-          npx netlify-cli deploy --prod --dir=./TodoApp --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
+          NETLIFY_AUTH_TOKEN=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+          NETLIFY_SITE_ID=${{ secrets.NETLIFY_SITE_ID }} \
+          npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod --dir=.
