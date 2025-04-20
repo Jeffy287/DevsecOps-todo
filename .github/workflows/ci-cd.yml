@@ -47,7 +47,7 @@ jobs:
         target: '${{ env.ZAP_URL }}'
         fail_action: false  # Change to true if you want to block production deploy on findings
         allow_issue_writing: false
-        artifact_name: zap-report
+        artifact_name: zapreport-${{ github.run_id }}  # ✅ FIXED: Valid name
       continue-on-error: true
 
     - name: Show ZAP Report in Console (Markdown)
@@ -72,7 +72,7 @@ jobs:
 
     - name: Deploy to Netlify (Production)
       working-directory: TodoApp
-      if: success()  # Deploy only if everything before this passed
+      if: success()
       run: |
         npx netlify-cli deploy \
           --site ${{ secrets.NETLIFY_SITE_ID }} \
