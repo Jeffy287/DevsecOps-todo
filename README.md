@@ -12,7 +12,7 @@ This is a simple To-Do app that allows users to add, remove, and manage tasks. T
 - HTML
 - CSS
 - JavaScript
-
+##
 ## Installation
 
 1. Clone the repository:
