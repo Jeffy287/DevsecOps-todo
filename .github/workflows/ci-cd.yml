@@ -39,6 +39,7 @@ jobs:
     - name: Extract Staging URL
       run: |
         echo "ZAP_URL=$(jq -r '.deploy_url' deploy-info.json)" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=zap-report-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
     - name: OWASP ZAP Scan on Staging
       uses: zaproxy/action-full-scan@v0.8.0
@@ -46,24 +47,14 @@ jobs:
         target: '${{ env.ZAP_URL }}'
         fail_action: false
         allow_issue_writing: false
-        artifact_name: zap-report-${{ github.run_id }}
+        artifact_name: '${{ env.ARTIFACT_NAME }}'
       continue-on-error: true
-
-    - name: Show ZAP Report in Console (Markdown)
-      if: always()
-      run: |
-        if [ -f report_md.md ]; then
-          echo "🧪 ZAP Scan Markdown Report:"
-          cat report_md.md
-        else
-          echo "⚠️ ZAP report not found."
-        fi
 
     - name: Upload ZAP Report
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: zap-report-${{ github.run_id }}
+        name: '${{ env.ARTIFACT_NAME }}'
         path: |
           report_html.html
           report_md.md
