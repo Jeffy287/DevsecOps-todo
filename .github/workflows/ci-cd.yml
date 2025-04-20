@@ -46,7 +46,7 @@ jobs:
         target: '${{ env.ZAP_URL }}'
         fail_action: false
         allow_issue_writing: false
-        artifact_name: zapreport-${{ github.run_number }}
+        artifact_name: zap-report-${{ github.run_id }}
       continue-on-error: true
 
     - name: Show ZAP Report in Console (Markdown)
@@ -63,7 +63,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: zapreport-${{ github.run_number }}
+        name: zap-report-${{ github.run_id }}
         path: |
           report_html.html
           report_md.md
