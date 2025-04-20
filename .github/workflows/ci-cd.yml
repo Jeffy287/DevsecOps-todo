@@ -34,10 +34,9 @@ jobs:
           --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
           --dir=. \
           --message="Preview Deploy" \
-          --json > ../deploy-info.json  # Save in root
+          --json > ../deploy-info.json
 
     - name: Extract Staging URL
-      working-directory: .
       run: |
         echo "ZAP_URL=$(jq -r '.deploy_url' deploy-info.json)" >> $GITHUB_ENV
 
@@ -45,9 +44,9 @@ jobs:
       uses: zaproxy/action-full-scan@v0.8.0
       with:
         target: '${{ env.ZAP_URL }}'
-        fail_action: false  # Change to true if you want to block production deploy on findings
+        fail_action: false
         allow_issue_writing: false
-        artifact_name: zapreport-${{ github.run_id }}  # ✅ FIXED: Valid name
+        artifact_name: zapreport-${{ github.run_number }}
       continue-on-error: true
 
     - name: Show ZAP Report in Console (Markdown)
@@ -64,7 +63,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: zap-report-${{ github.run_id }}
+        name: zapreport-${{ github.run_number }}
         path: |
           report_html.html
           report_md.md
